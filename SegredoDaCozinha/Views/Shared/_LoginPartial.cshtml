@@ -1,0 +1,43 @@
+@inject Microsoft.AspNetCore.Identity.SignInManager<SegredoDaCozinha.Models.Usuario> SignInManager
+@inject Microsoft.AspNetCore.Identity.UserManager<SegredoDaCozinha.Models.Usuario> UserManager
+
+@{
+    var usuario = await UserManager.GetUserAsync(User);
+}
+
+<div class="profile-section">
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        <div class="profile-preview">
+            <img class="avatar-img" src="@usuario.Foto" alt="Avatar" />
+            <div class="user-info">
+                <div class="user-name">@usuario?.Nome</div>
+                <div class="user-role"><i class="fas fa-user"></i> Logado</div>
+            </div>
+        </div>
+        <div class="dropdown-menu">
+            <a asp-action="MinhasReceitas" asp-controller="Receita" class="dropdown-item">
+                <i class="fas fa-book-open"></i> Minhas Receitas
+            </a>
+            <a asp-action="Criar" asp-controller="Receita" class="dropdown-item">
+                <i class="fas fa-plus-circle"></i> Nova Receita
+            </a>
+            <form asp-action="Logout" asp-controller="Account" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="dropdown-item" style="width: 100%; text-align: left;">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </form>
+        </div>
+    }
+    else
+    {
+        <a asp-action="Login" asp-controller="Account" class="profile-preview" style="text-decoration: none;">
+            <img class="avatar-img" src="~/img/usuarios/no-photo.png" alt="Avatar" />
+            <div class="user-info">
+                <div class="user-name">Visitante</div>
+                <div class="user-role"><i class="fas fa-user"></i> não logado</div>
+            </div>
+        </a>
+    }
+</div>

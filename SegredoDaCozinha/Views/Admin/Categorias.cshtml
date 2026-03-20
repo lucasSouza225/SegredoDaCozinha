@@ -1,0 +1,29 @@
+@model List<Categoria>
+@{
+    ViewData["Title"] = "Categorias";
+}
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1>Categorias</h1>
+    <a asp-action="CriarCategoria" class="featured-btn">+ Nova Categoria</a>
+</div>
+
+<table style="width: 100%; background: #FFF8F0; border-radius: 20px; overflow: hidden;">
+    <thead style="background: #F4E1D2;">
+        <tr>
+            <th style="padding: 1rem;">ID</th>
+            <th>Nome</th>
+            <th>Ícone</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr style="border-bottom: 1px solid #F4E1D2;">
+                <td style="padding: 0.8rem;">@item.Id</td>
+                <td>@item.Nome</td>
+                <td><i class="@item.Icone"></i> @item.Icone</td>
+            </tr>
+        }
+    </tbody>
+</table>

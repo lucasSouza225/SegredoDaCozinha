@@ -2,16 +2,20 @@
 @{
     ViewData["Title"] = "Home";
 }
+
 <!-- Categorias de receitas -->
 <div class="page-header">
     <h1><strong>Descubra os segredos</strong> da culinária caseira</h1>
     <div class="category-tags">
         @foreach (Categoria categoria in ViewBag.Categorias)
         {
-            <span class="category-tag">
+            <span class="category-tag" data-category="@categoria.Id" onclick="filtrarPorCategoria(@categoria.Id, '@categoria.Nome')">
                 <i class="@categoria.Icone"></i> @categoria.Nome
             </span>
         }
+        <span class="category-tag category-all active" onclick="mostrarTodasReceitas()">
+            <i class="fas fa-eye"></i> Todas
+        </span>
     </div>
 </div>
 
@@ -24,18 +28,20 @@
     <a asp-action="Receita" asp-route-id="@ViewBag.Destaque.Id" class="featured-btn">Ver receita <i class="fas fa-arrow-right"></i></a>
 </div>
 
-<!-- Grade de receitas -->
+<!-- Título e contador -->
 <div class="section-title">
     <i class="fas fa-utensils"></i>
     <span>Receitas populares</span>
 </div>
-<div class="recipe-grid">
+
+<!-- Grade de receitas -->
+<div class="recipe-grid" id="recipeGrid">
     @foreach (Receita receita in Model)
     {
-        <a asp-action="Receita" asp-route-id="@receita.Id" style="text-decoration: none;">
+        <a asp-action="Receita" asp-route-id="@receita.Id" style="text-decoration: none;" 
+           class="recipe-card-link" data-categoria="@receita.CategoriaId">
             <div class="recipe-card">
-                <div class="card-img"
-                    style="background-image: url('@receita.Foto');">
+                <div class="card-img" style="background-image: url('@receita.Foto');">
                     <span class="difficulty-badge">
                         <i class="far fa-clock"></i> @receita.TempoPreparo
                     </span>
@@ -60,12 +66,106 @@
     }
 </div>
 
-<!-- Mensagem caso não haja receitas -->
 @if (!Model.Any())
 {
-    <div class="no-results" style="text-align: center; padding: 4rem; background: #2b2722; border-radius: 28px;">
+    <div class="no-results" style="text-align: center; padding: 4rem; background: var(--cozinha-branca); border-radius: 28px;">
         <i class="fas fa-utensils" style="font-size: 3rem; color: var(--laranja-tempero); margin-bottom: 1rem; display: block;"></i>
-        <h3 style="color: var(--cozinha-branca);">Nenhuma receita encontrada</h3>
-        <p style="color: #bfaa96;">Comece adicionando suas primeiras receitas!</p>
+        <h3 style="color: var(--marco-zero);">Nenhuma receita encontrada</h3>
+        <p style="color: var(--cinza-texto);">Comece adicionando suas primeiras receitas!</p>
     </div>
+}
+
+@section Scripts {
+    <script>
+        function filtrarPorCategoria(categoriaId, categoriaNome) {
+            const cards = document.querySelectorAll('.recipe-card-link');
+            let contador = 0;
+            
+            // Remove classe active de todos os botões
+            document.querySelectorAll('.category-tag').forEach(tag => {
+                tag.classList.remove('active');
+            });
+            
+            // Adiciona classe active no botão clicado
+            const botaoClicado = document.querySelector(`.category-tag[data-category="${categoriaId}"]`);
+            if (botaoClicado) {
+                botaoClicado.classList.add('active');
+            }
+            
+            cards.forEach(card => {
+                const categoriaCard = card.getAttribute('data-categoria');
+                if (categoriaCard == categoriaId) {
+                    card.style.display = 'block';
+                    contador++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Atualiza o contador
+            const contadorElement = document.getElementById('contadorReceitas');
+            if (contadorElement) {
+                contadorElement.innerHTML = `${contador} receita${contador !== 1 ? 's' : ''}`;
+            }
+            
+            mostrarMensagemSeVazio(contador, categoriaNome);
+        }
+        
+        function mostrarTodasReceitas() {
+            const cards = document.querySelectorAll('.recipe-card-link');
+            let contador = 0;
+            
+            // Remove classe active de todos os botões
+            document.querySelectorAll('.category-tag').forEach(tag => {
+                tag.classList.remove('active');
+            });
+            
+            // Adiciona classe active no botão "Todas"
+            const botaoTodas = document.querySelector('.category-all');
+            if (botaoTodas) {
+                botaoTodas.classList.add('active');
+            }
+            
+            cards.forEach(card => {
+                card.style.display = 'block';
+                contador++;
+            });
+            
+            const contadorElement = document.getElementById('contadorReceitas');
+            if (contadorElement) {
+                contadorElement.innerHTML = `${contador} receita${contador !== 1 ? 's' : ''}`;
+            }
+            
+            const noResults = document.querySelector('.no-results-message');
+            if (noResults) {
+                noResults.remove();
+            }
+        }
+        
+        function mostrarMensagemSeVazio(contador, categoriaNome) {
+            const recipeGrid = document.getElementById('recipeGrid');
+            const existingMessage = document.querySelector('.no-results-message');
+            
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+            
+            if (contador === 0) {
+                const mensagemDiv = document.createElement('div');
+                mensagemDiv.className = 'no-results-message';
+                mensagemDiv.style.cssText = 'text-align: center; padding: 4rem; background: var(--cozinha-branca); border-radius: 28px; margin-top: 2rem;';
+                mensagemDiv.innerHTML = `
+                    <i class="fas fa-search" style="font-size: 3rem; color: var(--laranja-tempero); margin-bottom: 1rem; display: block;"></i>
+                    <h3 style="color: var(--marco-zero);">Nenhuma receita encontrada</h3>
+                    <p style="color: var(--cinza-texto);">Ainda não temos receitas na categoria "${categoriaNome}".</p>
+                    <p style="color: var(--cinza-texto);">Que tal <a href="/Receita/Criar" style="color: var(--laranja-tempero);">compartilhar uma</a>?</p>
+                `;
+                recipeGrid.parentNode.insertBefore(mensagemDiv, recipeGrid.nextSibling);
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            mostrarTodasReceitas();
+        });
+    </script>
 }

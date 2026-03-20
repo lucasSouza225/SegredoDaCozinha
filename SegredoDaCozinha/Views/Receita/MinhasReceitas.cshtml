@@ -1,0 +1,53 @@
+@model List<SegredoDaCozinha.Models.Receita>
+@{
+    ViewData["Title"] = "Minhas Receitas";
+}
+
+<div class="page-header">
+    <h1><strong>Minhas</strong> Receitas</h1>
+    <p style="text-align: center;">Suas criações culinárias</p>
+</div>
+
+@if (Model.Any())
+{
+    <div class="recipe-grid">
+        @foreach (var receita in Model)
+        {
+            <a asp-action="Receita" asp-controller="Home" asp-route-id="@receita.Id" style="text-decoration: none;">
+                <div class="recipe-card">
+                    <div class="card-img" style="background-image: url('@receita.Foto');">
+                        <span class="difficulty-badge">
+                            <i class="far fa-clock"></i> @receita.TempoPreparo
+                        </span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="recipe-name">@receita.Nome</h3>
+                        <div class="recipe-meta">
+                            <span class="difficulty-indicator">
+                                <i class="fas fa-thermometer-half"></i> @receita.Dificuldade
+                            </span>
+                            <span class="ingredients-count">
+                                <i class="fas fa-carrot"></i> @(receita.Ingredientes?.Count ?? 0) itens
+                            </span>
+                        </div>
+                        <div class="card-footer">
+                            <span><i class="far fa-heart"></i> @(receita.Favoritos?.Count ?? 0)</span>
+                            <span><i class="far fa-comment"></i> @(receita.Comentarios?.Count ?? 0)</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        }
+    </div>
+}
+else
+{
+    <div class="no-results" style="text-align: center; padding: 4rem; background: var(--cozinha-branca); border-radius: 28px;">
+        <i class="fas fa-utensils" style="font-size: 3rem; color: var(--laranja-tempero); margin-bottom: 1rem; display: block;"></i>
+        <h3 style="color: var(--marco-zero);">Você ainda não tem receitas</h3>
+        <p style="color: var(--cinza-texto);">Compartilhe seu primeiro segredo culinário!</p>
+        <a asp-action="Criar" class="featured-btn" style="margin-top: 1rem; display: inline-block;">
+            <i class="fas fa-plus"></i> Criar Receita
+        </a>
+    </div>
+}

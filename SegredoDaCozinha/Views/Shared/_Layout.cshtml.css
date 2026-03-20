@@ -39,10 +39,10 @@ button.accept-policy {
   line-height: inherit;
 }
 
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px;
+footer {
+    text-align: center;
+    background: linear-gradient(135deg, var(--marco-zero), var(--vermelho-segredo));
+    color: var(--cozinha-branca);
+    padding: 2rem;
+    margin-top: 4rem;
 }
