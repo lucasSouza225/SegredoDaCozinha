@@ -1,125 +1,86 @@
-// mostrar/esconder senha
 function togglePassword() {
     const passwordInput = document.getElementById('Senha');
-    const toggleIcon = document.querySelector('.toggle-password i');
-
-    if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        toggleIcon.classList.remove('fa-eye');
-        toggleIcon.classList.add('fa-eye-slash');
-    } else {
-        passwordInput.type = 'password';
-        toggleIcon.classList.remove('fa-eye-slash');
-        toggleIcon.classList.add('fa-eye');
-    }
+    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordInput.setAttribute('type', type);
+    
+    const icon = document.querySelector('.toggle-password i');
+    icon.classList.toggle('fa-eye');
+    icon.classList.toggle('fa-eye-slash');
 }
 
-// função para mostrar mensagem
-function showAlert(message, isSuccess = false) {
-    const alertMessage = document.getElementById('alertMessage');
-    const alertText = document.getElementById('alertText');
+document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
     
-    alertMessage.className = isSuccess ? 'alert-message success' : 'alert-message';
-    alertText.textContent = message;
-    alertMessage.style.display = 'flex';
-    
-    if (isSuccess) {
-        setTimeout(() => {
-            alertMessage.style.opacity = '0';
-            setTimeout(() => {
-                alertMessage.style.display = 'none';
-                alertMessage.style.opacity = '1';
-            }, 300);
-        }, 3000);
-    } else {
-        setTimeout(() => {
-            alertMessage.style.display = 'none';
-        }, 5000);
-    }
-}
-
-// função de login
-async function handleLogin(event) {
-    event.preventDefault();
-    
-    const email = document.getElementById('Email').value;
-    const password = document.getElementById('Senha').value;
-    const lembrar = document.getElementById('Lembrar')?.checked || false;
-    const urlRetorno = document.getElementById('UrlRetorno')?.value || '/';
     const btnLogin = document.getElementById('btnLogin');
-    
-    // validação básica
-    if (!email || !password) {
-        showAlert('Por favor, preencha todos os campos.');
-        return;
-    }
-    
-    // desabilitar botão durante a requisição
-    btnLogin.disabled = true;
+    const originalText = btnLogin.innerHTML;
     btnLogin.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
+    btnLogin.classList.add('loading');
+    btnLogin.disabled = true;
+    
+    const formData = {
+        Email: document.getElementById('Email').value,
+        Senha: document.getElementById('Senha').value,
+        Lembrar: document.getElementById('Lembrar').checked,
+        UrlRetorno: document.getElementById('UrlRetorno')?.value || ''
+    };
     
     try {
         const response = await fetch('/Account/Login', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                email: email,
-                senha: password,
-                lembrar: lembrar,
-                urlRetorno: urlRetorno
-            })
+            body: JSON.stringify(formData)
         });
         
-        const data = await response.json();
+        const result = await response.json();
         
-        if (data.success) {
-            showAlert(data.message, true);
-            
-            // redirecionar após 2 segundos
+        if (result.success) {
+            showAlert(result.message, 'success');
             setTimeout(() => {
-                window.location.href = data.redirectUrl || '/';
-            }, 2000);
+                window.location.href = result.redirectUrl;
+            }, 1500);
         } else {
-            showAlert(data.message);
-            
-            // reabilitar botão
+            showAlert(result.message, 'error');
+            btnLogin.innerHTML = originalText;
+            btnLogin.classList.remove('loading');
             btnLogin.disabled = false;
-            btnLogin.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar';
         }
     } catch (error) {
-        console.error('Erro no login:', error);
-        showAlert('Erro de conexão. Tente novamente.');
-        
-        // reabilitar botão
+        showAlert('Erro ao conectar com o servidor', 'error');
+        btnLogin.innerHTML = originalText;
+        btnLogin.classList.remove('loading');
         btnLogin.disabled = false;
-        btnLogin.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar';
     }
-}
-
-// validação do formulário
-document.getElementById('loginForm').addEventListener('submit', handleLogin);
-
-// animação de foco nos inputs
-const inputs = document.querySelectorAll('.form-control');
-inputs.forEach(input => {
-    input.addEventListener('focus', function () {
-        this.closest('.form-group').classList.add('focused');
-    });
-    
-    input.addEventListener('blur', function () {
-        this.closest('.form-group').classList.remove('focused');
-    });
 });
 
-// permitir submit com Enter
-document.addEventListener('keypress', function (e) {
-    if (e.key === 'Enter' && document.activeElement.tagName !== 'BUTTON') {
-        const form = document.getElementById('loginForm');
-        if (form && document.activeElement.form === form) {
-            e.preventDefault();
-            handleLogin(e);
-        }
-    }
+function showAlert(message, type) {
+    const alertDiv = document.getElementById('alertMessage');
+    const alertText = document.getElementById('alertText');
+    
+    alertText.textContent = message;
+    alertDiv.className = `alert-message ${type}`;
+    alertDiv.style.display = 'flex';
+    
+    // Scroll suave até o alerta
+    alertDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    
+    setTimeout(() => {
+        alertDiv.style.animation = 'fadeOut 0.3s ease-out';
+        setTimeout(() => {
+            alertDiv.style.display = 'none';
+            alertDiv.style.animation = '';
+        }, 300);
+    }, 5000);
+}
+
+// Adicionar efeito de foco nos campos
+document.querySelectorAll('.form-control').forEach(input => {
+    input.addEventListener('focus', () => {
+        input.parentElement.classList.add('focused');
+    });
+    
+    input.addEventListener('blur', () => {
+        input.parentElement.classList.remove('focused');
+    });
 });

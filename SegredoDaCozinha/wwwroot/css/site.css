@@ -1,31 +1,64 @@
+/* site.css - versão simplificada com a paleta */
+:root {
+    --vermelho-segredo: #D62828;
+    --laranja-tempero: #F77F00;
+    --marco-zero: #6A1B1A;
+    --fogao-antigo: #F4E1D2;
+    --cozinha-branca: #FFF8F0;
+}
+
 html {
-  font-size: 14px;
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+    html {
+        font-size: 16px;
+    }
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    background-color: var(--cozinha-branca);
+    color: var(--marco-zero);
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, 
+.form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem var(--cozinha-branca), 0 0 0 0.25rem var(--laranja-tempero);
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.form-floating > .form-control-plaintext::placeholder, 
+.form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, 
+.form-floating > .form-control:focus::placeholder {
+    text-align: start;
+}
+
+/* Estilos adicionais para links */
+a {
+    color: var(--laranja-tempero);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+a:hover {
+    color: var(--vermelho-segredo);
+}
+
+/* Botões personalizados */
+.btn-primary {
+    background-color: var(--vermelho-segredo);
+    border-color: var(--vermelho-segredo);
+}
+
+.btn-primary:hover {
+    background-color: var(--laranja-tempero);
+    border-color: var(--laranja-tempero);
 }

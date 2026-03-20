@@ -1,0 +1,77 @@
+@model LoginVM
+@{
+    ViewData["Title"] = "Login";
+    ViewData["mainClass"] = "login-container";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/login.css">
+}
+
+<div class="login-card">
+    <div class="login-header">
+        <h1>Bem-vindo ao Segredo da Cozinha</h1>
+        <p>Entre para descobrir receitas incríveis e compartilhar seus segredos</p>
+    </div>
+
+    <!-- mensagem de alerta -->
+    <div class="alert-message" id="alertMessage" style="display: none;">
+        <i class="fas fa-info-circle"></i>
+        <span id="alertText"></span>
+    </div>
+
+    <form id="loginForm">
+        <input asp-for="UrlRetorno" id="UrlRetorno" />
+        <div asp-validation-summary="ModelOnly" hidden></div>
+        
+        <div class="form-group">
+            <label asp-for="Email"><i class="fas fa-envelope"></i> E-mail</label>
+            <div class="input-wrapper">
+                <i class="fas fa-envelope"></i>
+                <input asp-for="Email" class="form-control" id="Email" autocomplete="email">
+            </div>
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Senha"><i class="fas fa-lock"></i> Senha</label>
+            <div class="password-wrapper">
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input asp-for="Senha" class="form-control" id="Senha" type="password" autocomplete="current-password">
+                </div>
+                <button type="button" class="toggle-password" onclick="togglePassword()">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+            <span asp-validation-for="Senha" class="text-danger"></span>
+        </div>
+
+        <div class="form-options">
+            <label class="remember-me">
+                <input type="checkbox" asp-for="Lembrar" id="Lembrar"> Lembrar-me
+            </label>
+            <a href="#" class="forgot-password">Esqueceu a senha?</a>
+        </div>
+
+        <button type="submit" class="btn-login" id="btnLogin">
+            <i class="fas fa-sign-in-alt"></i> Entrar
+        </button>
+
+        <div class="signup-prompt">
+            Ainda não tem conta?
+            <a href="#">Cadastre-se</a>
+        </div>
+    </form>
+</div>
+
+<!-- dica extra -->
+<div style="text-align: center; margin-top: 2rem; color: #7e6f60; font-size: 0.9rem;">
+    <i class="fas fa-shield-alt" style="color: var(--verde-alface);"></i>
+    Seus dados estão seguros · Segredo da Cozinha respeita sua privacidade
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial.cshtml" />
+    <script src="~/js/login.js"></script>
+}

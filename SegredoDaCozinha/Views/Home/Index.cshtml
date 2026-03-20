@@ -4,7 +4,7 @@
 }
 <!-- Categorias de receitas -->
 <div class="page-header">
-    <h1><strong>Receitas</strong> com sabor caseiro</h1>
+    <h1><strong>Descubra os segredos</strong> da culinária caseira</h1>
     <div class="category-tags">
         @foreach (Categoria categoria in ViewBag.Categorias)
         {
@@ -15,18 +15,18 @@
     </div>
 </div>
 
-<!-- Destaque sazonal (apenas apelo visual) -->
+<!-- Destaque sazonal -->
 <div class="featured-recipe">
     <div class="featured-text">
-        <h3><i class="fas fa-fire" style="color: var(--tomate);"></i> Receita em destaque - @ViewBag.Destaque.Nome</h3>
+        <h3><i class="fas fa-fire" style="color: var(--laranja-tempero);"></i> Receita em destaque - @ViewBag.Destaque.Nome</h3>
         <p>@ViewBag.Destaque.Descricao</p>
     </div>
-    <a asp-action="Receita" asp-route-id="@ViewBag.Destaque.Id" class="featured-btn">Ver receita</a>
+    <a asp-action="Receita" asp-route-id="@ViewBag.Destaque.Id" class="featured-btn">Ver receita <i class="fas fa-arrow-right"></i></a>
 </div>
 
-<!-- Grade de receitas 1 -->
+<!-- Grade de receitas -->
 <div class="section-title">
-    <i class="fa-solid fa-utensils"></i>
+    <i class="fas fa-utensils"></i>
     <span>Receitas populares</span>
 </div>
 <div class="recipe-grid">
@@ -43,15 +43,29 @@
                 <div class="card-content">
                     <h3 class="recipe-name">@receita.Nome</h3>
                     <div class="recipe-meta">
-                        <span class="difficulty-indicator"><i class="fas fa-thermometer-half"></i> @receita.Dificuldade</span>
-                        <span class="ingredients-count"><i class="fas fa-carrot"></i> @receita.Ingredientes.Count itens</span>
+                        <span class="difficulty-indicator">
+                            <i class="fas fa-thermometer-half"></i> @receita.Dificuldade
+                        </span>
+                        <span class="ingredients-count">
+                            <i class="fas fa-carrot"></i> @receita.Ingredientes.Count @(receita.Ingredientes.Count == 1 ? "item" : "itens")
+                        </span>
                     </div>
                     <div class="card-footer">
-                        <span><i class="far fa-heart"></i>&nbsp;&nbsp;@receita.Favoritos.Count</span>
-                        <span><i class="far fa-comment"></i>&nbsp;&nbsp;@receita.Comentarios.Count</span>
+                        <span><i class="far fa-heart"></i> @receita.Favoritos.Count</span>
+                        <span><i class="far fa-comment"></i> @receita.Comentarios.Count</span>
                     </div>
                 </div>
             </div>
         </a>
     }
 </div>
+
+<!-- Mensagem caso não haja receitas -->
+@if (!Model.Any())
+{
+    <div class="no-results" style="text-align: center; padding: 4rem; background: #2b2722; border-radius: 28px;">
+        <i class="fas fa-utensils" style="font-size: 3rem; color: var(--laranja-tempero); margin-bottom: 1rem; display: block;"></i>
+        <h3 style="color: var(--cozinha-branca);">Nenhuma receita encontrada</h3>
+        <p style="color: #bfaa96;">Comece adicionando suas primeiras receitas!</p>
+    </div>
+}

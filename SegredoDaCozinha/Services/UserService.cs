@@ -80,7 +80,7 @@ public class UsuarioService : IUsuarioService
 
     public async Task LogoutUsuario()
     {
-        _logger.LogInformation($"Usuário {ClaimTypes.Email} fez logoff");
+        _logger.LogInformation($"Usuário fez logoff");
         await _signInManager.SignOutAsync();
     }
 }
