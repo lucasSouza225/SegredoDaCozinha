@@ -12,11 +12,13 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private readonly AppDbContext _db;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public HomeController(ILogger<HomeController> logger, AppDbContext appDb)
+    public HomeController(ILogger<HomeController> logger, AppDbContext appDb, IWebHostEnvironment webHostEnvironment)
     {
         _logger = logger;
         _db = appDb;
+        _webHostEnvironment = webHostEnvironment;
     }
 
     public IActionResult Index()
@@ -27,8 +29,10 @@ public class HomeController : Controller
             .Include(r => r.Comentarios)
             .Include(r => r.Favoritos)
             .ToList();
+
         ViewData["Categorias"] = _db.Categorias.ToList();
         ViewData["Destaque"] = _db.Receitas.FirstOrDefault(r => r.Destaque);
+
         return View(receitas);
     }
 
@@ -39,17 +43,15 @@ public class HomeController : Controller
             .Include(r => r.Categoria)
             .Include(r => r.Preparos)
             .Include(r => r.Ingredientes)
-            .ThenInclude(ri => ri.Ingrediente)
+                .ThenInclude(ri => ri.Ingrediente)
             .Include(r => r.Comentarios)
-            .ThenInclude(c => c.Usuario)
+                .ThenInclude(c => c.Usuario)
             .Include(r => r.Favoritos)
             .FirstOrDefault();
-        
+
         if (receita == null)
-        {
             return NotFound();
-        }
-        
+
         return View(receita);
     }
 
@@ -61,7 +63,7 @@ public class HomeController : Controller
             .Include(r => r.Comentarios)
             .Include(r => r.Favoritos)
             .ToList();
-        
+
         ViewBag.Categorias = _db.Categorias.ToList();
         return View(receitas);
     }
@@ -77,11 +79,12 @@ public class HomeController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
-    // ===== EDITAR RECEITA =====
+    // ===== EDITAR (GET) =====
     [Authorize]
     public async Task<IActionResult> Editar(int id)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
         var receita = await _db.Receitas
             .Include(r => r.Ingredientes)
                 .ThenInclude(ri => ri.Ingrediente)
@@ -89,9 +92,7 @@ public class HomeController : Controller
             .FirstOrDefaultAsync(r => r.Id == id);
 
         if (receita == null)
-        {
             return NotFound();
-        }
 
         if (receita.UsuarioId != userId)
         {
@@ -103,22 +104,27 @@ public class HomeController : Controller
         return View(receita);
     }
 
+    // ===== EDITAR (POST) =====
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Editar(int id, Receita receita, 
-        string[] ingredientesNomes, string[] quantidades, string[] passos)
+    public async Task<IActionResult> Editar(
+        int id,
+        Receita receita,
+        IFormFile? fotoReceita,
+        string[] ingredientesNomes,
+        string[] quantidades,
+        string[] passos)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
         var receitaOriginal = await _db.Receitas
             .Include(r => r.Ingredientes)
             .Include(r => r.Preparos)
             .FirstOrDefaultAsync(r => r.Id == id);
 
         if (receitaOriginal == null)
-        {
             return NotFound();
-        }
 
         if (receitaOriginal.UsuarioId != userId)
         {
@@ -134,26 +140,57 @@ public class HomeController : Controller
 
         if (ModelState.IsValid)
         {
-            receitaOriginal.Nome = receita.Nome;
-            receitaOriginal.Descricao = receita.Descricao;
-            receitaOriginal.CategoriaId = receita.CategoriaId;
-            receitaOriginal.Dificuldade = receita.Dificuldade;
-            receitaOriginal.Rendimento = receita.Rendimento;
-            receitaOriginal.TempoPreparo = receita.TempoPreparo;
-            receitaOriginal.Foto = receita.Foto;
-            receitaOriginal.DicaDoChef = receita.DicaDoChef;
-
-            _db.ReceitaIngredientes.RemoveRange(receitaOriginal.Ingredientes);
-            _db.Preparos.RemoveRange(receitaOriginal.Preparos);
-
-            if (ingredientesNomes != null && quantidades != null)
+            try
             {
-                for (int i = 0; i < ingredientesNomes.Length; i++)
+                // Atualiza dados
+                receitaOriginal.Nome = receita.Nome;
+                receitaOriginal.Descricao = receita.Descricao;
+                receitaOriginal.CategoriaId = receita.CategoriaId;
+                receitaOriginal.Dificuldade = receita.Dificuldade;
+                receitaOriginal.Rendimento = receita.Rendimento;
+                receitaOriginal.TempoPreparo = receita.TempoPreparo;
+                receitaOriginal.DicaDoChef = receita.DicaDoChef;
+
+                // Foto
+                if (fotoReceita != null && fotoReceita.Length > 0)
                 {
-                    if (!string.IsNullOrEmpty(ingredientesNomes[i]) && !string.IsNullOrEmpty(quantidades[i]))
+                    Console.WriteLine($"📸 Nova imagem: {fotoReceita.FileName}");
+
+                    if (!string.IsNullOrEmpty(receitaOriginal.Foto) &&
+                        receitaOriginal.Foto != "/img/receitas/default.jpg")
                     {
+                        var caminhoAntigo = Path.Combine(
+                            _webHostEnvironment.WebRootPath,
+                            receitaOriginal.Foto.TrimStart('/')
+                        );
+
+                        if (System.IO.File.Exists(caminhoAntigo))
+                        {
+                            System.IO.File.Delete(caminhoAntigo);
+                            Console.WriteLine($"🗑️ Foto antiga removida");
+                        }
+                    }
+
+                    receitaOriginal.Foto = await SalvarImagemReceita(fotoReceita);
+                }
+
+                // Limpa antigos
+                _db.ReceitaIngredientes.RemoveRange(receitaOriginal.Ingredientes);
+                _db.Preparos.RemoveRange(receitaOriginal.Preparos);
+
+                // Ingredientes
+                if (ingredientesNomes != null && quantidades != null)
+                {
+                    for (int i = 0; i < ingredientesNomes.Length; i++)
+                    {
+                        if (string.IsNullOrWhiteSpace(ingredientesNomes[i]) ||
+                            string.IsNullOrWhiteSpace(quantidades[i]))
+                            continue;
+
+                        var nome = ingredientesNomes[i].Trim().ToLower();
+
                         var ingredienteExistente = await _db.Ingredientes
-                            .FirstOrDefaultAsync(ing => ing.Nome.ToLower() == ingredientesNomes[i].ToLower().Trim());
+                            .FirstOrDefaultAsync(i => i.Nome.ToLower() == nome);
 
                         int ingredienteId;
 
@@ -163,58 +200,60 @@ public class HomeController : Controller
                         }
                         else
                         {
-                            var novoIngrediente = new Ingrediente
-                            {
-                                Nome = ingredientesNomes[i].Trim()
-                            };
-                            _db.Ingredientes.Add(novoIngrediente);
+                            var novo = new Ingrediente { Nome = ingredientesNomes[i].Trim() };
+                            _db.Ingredientes.Add(novo);
                             await _db.SaveChangesAsync();
-                            ingredienteId = novoIngrediente.Id;
+                            ingredienteId = novo.Id;
                         }
 
-                        var receitaIngrediente = new ReceitaIngrediente
+                        _db.ReceitaIngredientes.Add(new ReceitaIngrediente
                         {
                             ReceitaId = receitaOriginal.Id,
                             IngredienteId = ingredienteId,
                             Quantidade = quantidades[i].Trim()
-                        };
-                        _db.ReceitaIngredientes.Add(receitaIngrediente);
+                        });
                     }
                 }
-            }
 
-            if (passos != null)
-            {
-                foreach (var passo in passos)
+                // Passos
+                if (passos != null)
                 {
-                    if (!string.IsNullOrEmpty(passo))
+                    foreach (var passo in passos)
                     {
-                        var preparo = new Preparo
+                        if (string.IsNullOrWhiteSpace(passo)) continue;
+
+                        _db.Preparos.Add(new Preparo
                         {
                             ReceitaId = receitaOriginal.Id,
                             Texto = passo.Trim()
-                        };
-                        _db.Preparos.Add(preparo);
+                        });
                     }
                 }
-            }
 
-            await _db.SaveChangesAsync();
-            TempData["Mensagem"] = "Receita atualizada com sucesso!";
-            return RedirectToAction("Receita", new { id = receitaOriginal.Id });
+                await _db.SaveChangesAsync();
+
+                TempData["Mensagem"] = "Receita atualizada com sucesso!";
+                return RedirectToAction("Receita", new { id = receitaOriginal.Id });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Erro: {ex.Message}");
+                TempData["Erro"] = $"Erro ao salvar: {ex.Message}";
+            }
         }
 
         ViewBag.Categorias = await _db.Categorias.ToListAsync();
         return View(receita);
     }
 
-    // ===== DELETAR RECEITA =====
+    // ===== DELETAR =====
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Deletar(int id)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
         var receita = await _db.Receitas
             .Include(r => r.Ingredientes)
             .Include(r => r.Preparos)
@@ -223,24 +262,55 @@ public class HomeController : Controller
             .FirstOrDefaultAsync(r => r.Id == id);
 
         if (receita == null)
-        {
             return NotFound();
-        }
 
         if (receita.UsuarioId != userId)
         {
-            TempData["Erro"] = "Você não tem permissão para deletar esta receita.";
+            TempData["Erro"] = "Você não tem permissão para deletar.";
             return RedirectToAction("Receita", new { id });
+        }
+
+        if (!string.IsNullOrEmpty(receita.Foto) &&
+            receita.Foto != "/img/receitas/default.jpg")
+        {
+            var caminho = Path.Combine(_webHostEnvironment.WebRootPath, receita.Foto.TrimStart('/'));
+
+            if (System.IO.File.Exists(caminho))
+                System.IO.File.Delete(caminho);
         }
 
         _db.ReceitaIngredientes.RemoveRange(receita.Ingredientes);
         _db.Preparos.RemoveRange(receita.Preparos);
         _db.Comentarios.RemoveRange(receita.Comentarios);
         _db.Favoritos.RemoveRange(receita.Favoritos);
+
         _db.Receitas.Remove(receita);
         await _db.SaveChangesAsync();
 
         TempData["Mensagem"] = "Receita deletada com sucesso!";
         return RedirectToAction("Index");
+    }
+
+    // ===== SALVAR IMAGEM =====
+    private async Task<string> SalvarImagemReceita(IFormFile foto)
+    {
+        var ext = Path.GetExtension(foto.FileName).ToLowerInvariant();
+        var permitidas = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+
+        if (!permitidas.Contains(ext))
+            throw new Exception("Formato inválido");
+
+        var nome = $"{Guid.NewGuid()}{ext}";
+        var pasta = Path.Combine(_webHostEnvironment.WebRootPath, "img", "receitas");
+
+        if (!Directory.Exists(pasta))
+            Directory.CreateDirectory(pasta);
+
+        var caminho = Path.Combine(pasta, nome);
+
+        using var stream = new FileStream(caminho, FileMode.Create);
+        await foto.CopyToAsync(stream);
+
+        return $"/img/receitas/{nome}";
     }
 }

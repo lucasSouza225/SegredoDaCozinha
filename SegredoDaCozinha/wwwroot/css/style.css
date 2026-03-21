@@ -1078,3 +1078,9 @@ footer a:hover {
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
 }
+.recipe-header-img {
+    flex: 1 1 380px;
+    min-height: 320px;
+    border-radius: 32px;
+    overflow: hidden;
+}

@@ -11,10 +11,12 @@ namespace SegredoDaCozinha.Controllers;
 public class ReceitaController : Controller
 {
     private readonly AppDbContext _db;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public ReceitaController(AppDbContext db)
+    public ReceitaController(AppDbContext db, IWebHostEnvironment webHostEnvironment)
     {
         _db = db;
+        _webHostEnvironment = webHostEnvironment;
     }
 
     // GET: Receita/Criar
@@ -27,9 +29,20 @@ public class ReceitaController : Controller
     // POST: Receita/Criar
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Criar(Receita receita, string[] ingredientesNomes, string[] quantidades, string[] passos)
+    public async Task<IActionResult> Criar(
+        Receita receita,
+        IFormFile? fotoReceita,
+        string[] ingredientesNomes,
+        string[] quantidades,
+        string[] passos)
     {
-        // Remove erros de validação
+        // Debug da imagem
+        if (fotoReceita != null)
+            Console.WriteLine($"📸 IMAGEM RECEBIDA: {fotoReceita.FileName} - {fotoReceita.Length} bytes");
+        else
+            Console.WriteLine("❌ NENHUMA IMAGEM RECEBIDA!");
+
+        // Remove validações desnecessárias
         ModelState.Remove("Usuario");
         ModelState.Remove("UsuarioId");
         ModelState.Remove("Categoria");
@@ -42,9 +55,8 @@ public class ReceitaController : Controller
         {
             try
             {
-                // Pega o ID do usuário logado
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                
+
                 if (string.IsNullOrEmpty(userId))
                 {
                     TempData["Erro"] = "Usuário não identificado. Faça login novamente.";
@@ -54,65 +66,72 @@ public class ReceitaController : Controller
                 receita.UsuarioId = userId;
                 receita.Destaque = false;
 
-                // Salva a receita primeiro
+                // Imagem
+                if (fotoReceita != null && fotoReceita.Length > 0)
+                {
+                    Console.WriteLine("📸 Salvando imagem...");
+                    receita.Foto = await SalvarImagemReceita(fotoReceita);
+                }
+                else
+                {
+                    receita.Foto = "/img/receitas/default.jpg";
+                }
+
+                // Salva receita
                 _db.Receitas.Add(receita);
                 await _db.SaveChangesAsync();
 
-                // Adiciona os ingredientes
+                Console.WriteLine($"✅ Receita ID: {receita.Id}");
+
+                // Ingredientes
                 if (ingredientesNomes != null && quantidades != null)
                 {
                     for (int i = 0; i < ingredientesNomes.Length; i++)
                     {
-                        if (!string.IsNullOrEmpty(ingredientesNomes[i]) && !string.IsNullOrEmpty(quantidades[i]))
+                        if (string.IsNullOrWhiteSpace(ingredientesNomes[i]) ||
+                            string.IsNullOrWhiteSpace(quantidades[i]))
+                            continue;
+
+                        var nome = ingredientesNomes[i].Trim().ToLower();
+
+                        var ingredienteExistente = await _db.Ingredientes
+                            .FirstOrDefaultAsync(i => i.Nome.ToLower() == nome);
+
+                        int ingredienteId;
+
+                        if (ingredienteExistente != null)
                         {
-                            // Verifica se o ingrediente já existe
-                            var ingredienteExistente = await _db.Ingredientes
-                                .FirstOrDefaultAsync(ing => ing.Nome.ToLower() == ingredientesNomes[i].ToLower().Trim());
-
-                            int ingredienteId;
-
-                            if (ingredienteExistente != null)
-                            {
-                                ingredienteId = ingredienteExistente.Id;
-                            }
-                            else
-                            {
-                                // Cria novo ingrediente
-                                var novoIngrediente = new Ingrediente
-                                {
-                                    Nome = ingredientesNomes[i].Trim()
-                                };
-                                _db.Ingredientes.Add(novoIngrediente);
-                                await _db.SaveChangesAsync();
-                                ingredienteId = novoIngrediente.Id;
-                            }
-
-                            // Adiciona o relacionamento
-                            var receitaIngrediente = new ReceitaIngrediente
-                            {
-                                ReceitaId = receita.Id,
-                                IngredienteId = ingredienteId,
-                                Quantidade = quantidades[i].Trim()
-                            };
-                            _db.ReceitaIngredientes.Add(receitaIngrediente);
+                            ingredienteId = ingredienteExistente.Id;
                         }
+                        else
+                        {
+                            var novo = new Ingrediente { Nome = ingredientesNomes[i].Trim() };
+                            _db.Ingredientes.Add(novo);
+                            await _db.SaveChangesAsync();
+                            ingredienteId = novo.Id;
+                        }
+
+                        _db.ReceitaIngredientes.Add(new ReceitaIngrediente
+                        {
+                            ReceitaId = receita.Id,
+                            IngredienteId = ingredienteId,
+                            Quantidade = quantidades[i].Trim()
+                        });
                     }
                 }
 
-                // Adiciona os passos de preparo
+                // Passos
                 if (passos != null)
                 {
                     foreach (var passo in passos)
                     {
-                        if (!string.IsNullOrEmpty(passo))
+                        if (string.IsNullOrWhiteSpace(passo)) continue;
+
+                        _db.Preparos.Add(new Preparo
                         {
-                            var preparo = new Preparo
-                            {
-                                ReceitaId = receita.Id,
-                                Texto = passo.Trim()
-                            };
-                            _db.Preparos.Add(preparo);
-                        }
+                            ReceitaId = receita.Id,
+                            Texto = passo.Trim()
+                        });
                     }
                 }
 
@@ -123,6 +142,7 @@ public class ReceitaController : Controller
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"❌ ERRO: {ex.Message}");
                 TempData["Erro"] = $"Erro ao salvar: {ex.Message}";
             }
         }
@@ -131,20 +151,44 @@ public class ReceitaController : Controller
         return View(receita);
     }
 
-    // GET: Receita/MinhasReceitas
+    // SALVAR IMAGEM
+    private async Task<string> SalvarImagemReceita(IFormFile foto)
+    {
+        var extensao = Path.GetExtension(foto.FileName).ToLowerInvariant();
+        var permitidas = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+
+        if (!permitidas.Contains(extensao))
+            throw new Exception("Formato de imagem não permitido.");
+
+        var nome = $"{Guid.NewGuid()}{extensao}";
+        var pasta = Path.Combine(_webHostEnvironment.WebRootPath, "img", "receitas");
+
+        if (!Directory.Exists(pasta))
+            Directory.CreateDirectory(pasta);
+
+        var caminho = Path.Combine(pasta, nome);
+
+        using var stream = new FileStream(caminho, FileMode.Create);
+        await foto.CopyToAsync(stream);
+
+        return $"/img/receitas/{nome}";
+    }
+
+    // Minhas receitas
     public async Task<IActionResult> MinhasReceitas()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var minhasReceitas = await _db.Receitas
+
+        var receitas = await _db.Receitas
             .Where(r => r.UsuarioId == userId)
             .Include(r => r.Categoria)
             .Include(r => r.Ingredientes)
-            .ThenInclude(ri => ri.Ingrediente)
+                .ThenInclude(ri => ri.Ingrediente)
             .Include(r => r.Comentarios)
             .Include(r => r.Favoritos)
             .OrderByDescending(r => r.Id)
             .ToListAsync();
 
-        return View(minhasReceitas);
+        return View(receitas);
     }
 }

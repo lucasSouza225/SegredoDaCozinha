@@ -231,7 +231,12 @@ body {
     gap: 0.8rem;
     margin-top: 2rem;
 }
-
+.recipe-header-img {
+    flex: 1 1 380px;
+    min-height: 320px;
+    border-radius: 32px;
+    overflow: hidden;
+}
 .category-tag {
     background: #2f2a24;
     border: 1px solid var(--marrom-claro);

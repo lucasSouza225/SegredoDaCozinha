@@ -6,194 +6,201 @@
 
 @section Styles {
     <style>
-        .criar-receita-container {
-            max-width: 900px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
+                .criar-receita-container {
+                    max-width: 900px;
+                    margin: 2rem auto;
+                    padding: 0 1rem;
+                }
 
-        .form-card {
-            background: var(--cozinha-branca);
-            border-radius: 32px;
-            padding: 2rem;
-            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
-            border: 1px solid var(--fogao-antigo);
-        }
+                .form-card {
+                    background: var(--cozinha-branca);
+                    border-radius: 32px;
+                    padding: 2rem;
+                    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+                    border: 1px solid var(--fogao-antigo);
+                }
 
-        .form-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
+                .form-header {
+                    text-align: center;
+                    margin-bottom: 2rem;
+                }
 
-        .form-header h1 {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--vermelho-segredo), var(--laranja-tempero));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
+                .form-header h1 {
+                    font-size: 2rem;
+                    margin-bottom: 0.5rem;
+                    background: linear-gradient(135deg, var(--vermelho-segredo), var(--laranja-tempero));
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    color: transparent;
+                }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
+                .form-group {
+                    margin-bottom: 1.5rem;
+                }
 
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--marco-zero);
-        }
+                .form-group label {
+                    display: block;
+                    font-weight: 600;
+                    margin-bottom: 0.5rem;
+                    color: var(--marco-zero);
+                }
 
-        .form-group label i {
-            color: var(--laranja-tempero);
-            margin-right: 8px;
-        }
+                .form-group label i {
+                    color: var(--laranja-tempero);
+                    margin-right: 8px;
+                }
 
-        .form-control {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border: 2px solid var(--fogao-antigo);
-            border-radius: 16px;
-            font-size: 1rem;
-            background: var(--cozinha-branca);
-        }
+                .form-control {
+                    width: 100%;
+                    padding: 0.8rem 1rem;
+                    border: 2px solid var(--fogao-antigo);
+                    border-radius: 16px;
+                    font-size: 1rem;
+                    background: var(--cozinha-branca);
+                }
 
-        .form-control:focus {
-            outline: none;
-            border-color: var(--laranja-tempero);
-        }
+                .form-control:focus {
+                    outline: none;
+                    border-color: var(--laranja-tempero);
+                }
 
-        .row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
+                .row {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 1rem;
+                }
 
-        .ingredientes-section, .preparo-section {
-            background: var(--fogao-antigo);
-            border-radius: 20px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
+                .ingredientes-section,
+            .preparo-section {
+                    background: var(--fogao-antigo);
+                    border-radius: 20px;
+                    padding: 1.5rem;
+                    margin-bottom: 1.5rem;
+                }
 
-        .ingredientes-section h3, .preparo-section h3 {
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--marco-zero);
-        }
+                .ingredientes-section h3,
+            .preparo-section h3 {
+                    margin-bottom: 1rem;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    color: var(--marco-zero);
+                }
 
-        .ingrediente-item, .preparo-item {
-            display: flex;
-            gap: 0.8rem;
-            margin-bottom: 0.8rem;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .ingrediente-item input:first-child {
-            flex: 2;
-            padding: 0.7rem 1rem;
-            border-radius: 12px;
-            border: 1px solid var(--fogao-antigo);
-        }
-
-        .ingrediente-item input:last-child {
-            flex: 1;
-            padding: 0.7rem 1rem;
-            border-radius: 12px;
-            border: 1px solid var(--fogao-antigo);
-        }
-
-        .preparo-item input {
-            flex: 1;
-            padding: 0.7rem 1rem;
-            border-radius: 12px;
-            border: 1px solid var(--fogao-antigo);
-        }
-
-        .btn-add {
-            background: var(--laranja-tempero);
-            color: #1e1b16;
-            border: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            margin-top: 0.8rem;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-add:hover {
-            background: var(--vermelho-segredo);
-            color: white;
-        }
-
-        .btn-remove {
-            background: #dc3545;
-            color: white;
-            border: none;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-
-        .btn-submit {
-            background: linear-gradient(135deg, var(--vermelho-segredo), var(--laranja-tempero));
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            flex: 1;
-        }
-
-        .btn-cancelar {
-            background: var(--fogao-antigo);
-            color: var(--marco-zero);
-            text-align: center;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            flex: 1;
-            transition: all 0.3s;
-        }
-
-        .btn-cancelar:hover {
-            background: var(--marrom-claro);
-        }
-
-        /* Responsividade - CORRIGIDO: use @@media com dois arrobas */
-        @@media (max-width: 768px) {
-            .row {
-                grid-template-columns: 1fr;
-            }
-            .ingrediente-item {
-                flex-direction: column;
-            }
-            .ingrediente-item input:first-child,
-            .ingrediente-item input:last-child {
-                width: 100%;
-            }
+                .ingrediente-item,
             .preparo-item {
-                flex-direction: column;
-            }
-            .preparo-item input {
-                width: 100%;
-            }
-            .btn-submit, .btn-cancelar {
-                padding: 0.8rem;
-            }
-        }
+                    display: flex;
+                    gap: 0.8rem;
+                    margin-bottom: 0.8rem;
+                    align-items: center;
+                    flex-wrap: wrap;
+                }
+
+                .ingrediente-item input:first-child {
+                    flex: 2;
+                    padding: 0.7rem 1rem;
+                    border-radius: 12px;
+                    border: 1px solid var(--fogao-antigo);
+                }
+
+                .ingrediente-item input:last-child {
+                    flex: 1;
+                    padding: 0.7rem 1rem;
+                    border-radius: 12px;
+                    border: 1px solid var(--fogao-antigo);
+                }
+
+                .preparo-item input {
+                    flex: 1;
+                    padding: 0.7rem 1rem;
+                    border-radius: 12px;
+                    border: 1px solid var(--fogao-antigo);
+                }
+
+                .btn-add {
+                    background: var(--laranja-tempero);
+                    color: #1e1b16;
+                    border: none;
+                    padding: 0.6rem 1.2rem;
+                    border-radius: 12px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    margin-top: 0.8rem;
+                    transition: all 0.3s;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                }
+
+                .btn-add:hover {
+                    background: var(--vermelho-segredo);
+                    color: white;
+                }
+
+                .btn-remove {
+                    background: #dc3545;
+                    color: white;
+                    border: none;
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
+                    cursor: pointer;
+                }
+
+                .btn-submit {
+                    background: linear-gradient(135deg, var(--vermelho-segredo), var(--laranja-tempero));
+                    color: white;
+                    border: none;
+                    padding: 1rem 2rem;
+                    border-radius: 50px;
+                    font-size: 1.1rem;
+                    font-weight: 700;
+                    cursor: pointer;
+                    flex: 1;
+                }
+
+                .btn-cancelar {
+                    background: var(--fogao-antigo);
+                    color: var(--marco-zero);
+                    text-align: center;
+                    padding: 1rem 2rem;
+                    border-radius: 50px;
+                    text-decoration: none;
+                    font-weight: 600;
+                    flex: 1;
+                    transition: all 0.3s;
+                }
+
+                .btn-cancelar:hover {
+                    background: var(--marrom-claro);
+                }
+
+                /* Responsividade - CORRIGIDO: use @@media com dois arrobas */
+                @@media (max-width: 768px) {
+                    .row {
+                        grid-template-columns: 1fr;
+                    }
+                    .ingrediente-item {
+                        flex-direction: column;
+                    }
+                    .ingrediente-item input:first-child,
+                    .ingrediente-item input:last-child {
+                        width: 100%;
+                    }
+
+                    .preparo-item {
+                        flex-direction: column;
+                    }
+
+                    .preparo-item input {
+                        width: 100%;
+                    }
+
+                    .btn-submit,
+                .btn-cancelar {
+                        padding: 0.8rem;
+                    }
+                }
     </style>
 }
 
@@ -203,7 +210,7 @@
         <p>Atualize os detalhes da sua receita</p>
     </div>
 
-    <form asp-action="Editar" method="post">
+    <form asp-action="Editar" method="post" enctype="multipart/form-data">
         @Html.AntiForgeryToken()
         <input type="hidden" asp-for="Id" />
         <input type="hidden" asp-for="UsuarioId" />
@@ -212,159 +219,193 @@
             <div class="form-group">
                 <label asp-for="Nome"><i class="fas fa-utensils"></i> Nome da Receita</label>
                 <input asp-for="Nome" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="CategoriaId"><i class="fas fa-tag"></i> Categoria</label>
+                    <select asp-for="CategoriaId" class="form-control" required>
+                        <option value="">Selecione uma categoria</option>
+                        @foreach (var cat in ViewBag.Categorias)
+                        {
+                            <option value="@cat.Id">@cat.Nome</option>
+                        }
+                    </select>
+                </div>
             </div>
 
             <div class="form-group">
-                <label asp-for="CategoriaId"><i class="fas fa-tag"></i> Categoria</label>
-                <select asp-for="CategoriaId" class="form-control" required>
-                    <option value="">Selecione uma categoria</option>
-                    @foreach (var cat in ViewBag.Categorias)
-                    {
-                        <option value="@cat.Id">@cat.Nome</option>
-                    }
-                </select>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Descricao"><i class="fas fa-align-left"></i> Descrição</label>
-            <textarea asp-for="Descricao" class="form-control" rows="3"></textarea>
-        </div>
-
-        <div class="row">
-            <div class="form-group">
-                <label asp-for="TempoPreparo"><i class="fas fa-clock"></i> Tempo de Preparo</label>
-                <input asp-for="TempoPreparo" class="form-control">
+                <label asp-for="Descricao"><i class="fas fa-align-left"></i> Descrição</label>
+                <textarea asp-for="Descricao" class="form-control" rows="3"></textarea>
             </div>
 
-            <div class="form-group">
-                <label asp-for="Rendimento"><i class="fas fa-users"></i> Rendimento</label>
-                <input asp-for="Rendimento" class="form-control">
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="form-group">
-                <label asp-for="Dificuldade"><i class="fas fa-chart-line"></i> Dificuldade</label>
-                <select asp-for="Dificuldade" class="form-control">
-                    <option value="1">Fácil</option>
-                    <option value="2">Médio</option>
-                    <option value="3">Difícil</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Foto"><i class="fas fa-image"></i> URL da Foto</label>
-                <input asp-for="Foto" class="form-control">
-            </div>
-        </div>
-
-        <div class="ingredientes-section">
-            <h3><i class="fas fa-carrot"></i> Ingredientes</h3>
-            <div id="ingredientes-container">
-                @if (Model.Ingredientes != null && Model.Ingredientes.Any())
-                {
-                    foreach (var ri in Model.Ingredientes)
-                    {
-                        <div class="ingrediente-item">
-                            <input type="text" name="ingredientesNomes[]" value="@ri.Ingrediente.Nome" class="form-control">
-                            <input type="text" name="quantidades[]" value="@ri.Quantidade" class="form-control">
-                            <button type="button" class="btn-remove" onclick="removerIngrediente(this)">✕</button>
-                        </div>
-                    }
-                }
-                else
-                {
-                    <div class="ingrediente-item">
-                        <input type="text" name="ingredientesNomes[]" placeholder="Nome do ingrediente" class="form-control">
-                        <input type="text" name="quantidades[]" placeholder="Quantidade" class="form-control">
-                        <button type="button" class="btn-remove" onclick="removerIngrediente(this)">✕</button>
+            <div class="row">
+                <div class="form-group">
+                    <label asp-for="TempoPreparo"><i class="fas fa-clock"></i> Tempo de Preparo</label>
+                    <input asp-for="TempoPreparo" class="form-control">
                     </div>
-                }
-            </div>
-            <button type="button" class="btn-add" onclick="adicionarIngrediente()">
-                <i class="fas fa-plus"></i> Adicionar Ingrediente
-            </button>
-        </div>
 
-        <div class="preparo-section">
-            <h3><i class="fas fa-list-ol"></i> Modo de Preparo</h3>
-            <div id="preparo-container">
-                @if (Model.Preparos != null && Model.Preparos.Any())
-                {
-                    foreach (var preparo in Model.Preparos)
-                    {
-                        <div class="preparo-item">
-                            <input type="text" name="passos[]" value="@preparo.Texto" class="form-control">
-                            <button type="button" class="btn-remove" onclick="removerPreparo(this)">✕</button>
+                    <div class="form-group">
+                        <label asp-for="Rendimento"><i class="fas fa-users"></i> Rendimento</label>
+                        <input asp-for="Rendimento" class="form-control">
                         </div>
-                    }
-                }
-                else
-                {
-                    <div class="preparo-item">
-                        <input type="text" name="passos[]" placeholder="Passo 1: ..." class="form-control">
-                        <button type="button" class="btn-remove" onclick="removerPreparo(this)">✕</button>
                     </div>
-                }
+
+                    <div class="row">
+                        <div class="form-group">
+                            <label asp-for="Dificuldade"><i class="fas fa-chart-line"></i> Dificuldade</label>
+                            <select asp-for="Dificuldade" class="form-control">
+                                <option value="1">Fácil</option>
+                                <option value="2">Médio</option>
+                                <option value="3">Difícil</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-image"></i> Foto da Receita</label>
+
+                            @if (!string.IsNullOrEmpty(Model.Foto))
+                            {
+                                <div style="margin-bottom: 1rem;">
+                                    <img src="@Model.Foto" alt="Foto atual"
+                                         style="max-width: 150px; max-height: 150px; border-radius: 12px; border: 2px solid var(--laranja-tempero);">
+                                    <p><small style="color: var(--cinza-texto);">Foto atual</small></p>
+                                </div>
+                            }
+
+                            <input type="file" name="fotoReceita" id="fotoReceita" accept="image/*" class="form-control"
+                                   style="padding: 0.5rem; border: 2px dashed var(--fogao-antigo);">
+                            <div class="sugestao" style="margin-top: 0.5rem; font-size: 0.8rem;">
+                                <i class="fas fa-info-circle"></i> Deixe em branco para manter a foto atual
+                            </div>
+                            <div id="previewContainer" style="margin-top: 1rem; display: none;">
+                                <img id="previewImagem" src="#" alt="Preview"
+                                     style="max-width: 150px; border-radius: 12px; border: 2px solid var(--laranja-tempero);">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="ingredientes-section">
+                        <h3><i class="fas fa-carrot"></i> Ingredientes</h3>
+                        <div id="ingredientes-container">
+                            @if (Model.Ingredientes != null && Model.Ingredientes.Any())
+                            {
+                                foreach (var ri in Model.Ingredientes)
+                                {
+                                    <div class="ingrediente-item">
+                                        <input type="text" name="ingredientesNomes[]" value="@ri.Ingrediente.Nome" class="form-control">
+                                        <input type="text" name="quantidades[]" value="@ri.Quantidade" class="form-control">
+                                        <button type="button" class="btn-remove" onclick="removerIngrediente(this)">✕</button>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="ingrediente-item">
+                                    <input type="text" name="ingredientesNomes[]" placeholder="Nome do ingrediente"
+                                           class="form-control">
+                                    <input type="text" name="quantidades[]" placeholder="Quantidade" class="form-control">
+                                    <button type="button" class="btn-remove" onclick="removerIngrediente(this)">✕</button>
+                                </div>
+                            }
+                        </div>
+                        <button type="button" class="btn-add" onclick="adicionarIngrediente()">
+                            <i class="fas fa-plus"></i> Adicionar Ingrediente
+                        </button>
+                    </div>
+
+                    <div class="preparo-section">
+                        <h3><i class="fas fa-list-ol"></i> Modo de Preparo</h3>
+                        <div id="preparo-container">
+                            @if (Model.Preparos != null && Model.Preparos.Any())
+                            {
+                                foreach (var preparo in Model.Preparos)
+                                {
+                                    <div class="preparo-item">
+                                        <input type="text" name="passos[]" value="@preparo.Texto" class="form-control">
+                                        <button type="button" class="btn-remove" onclick="removerPreparo(this)">✕</button>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="preparo-item">
+                                    <input type="text" name="passos[]" placeholder="Passo 1: ..." class="form-control">
+                                    <button type="button" class="btn-remove" onclick="removerPreparo(this)">✕</button>
+                                </div>
+                            }
+                        </div>
+                        <button type="button" class="btn-add" onclick="adicionarPreparo()">
+                            <i class="fas fa-plus"></i> Adicionar Passo
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="DicaDoChef"><i class="fas fa-lightbulb"></i> Dica do Chef</label>
+                        <textarea asp-for="DicaDoChef" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem;">
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-save"></i> Salvar Alterações
+                        </button>
+                        <a asp-action="Receita" asp-route-id="@Model.Id" class="btn-cancelar">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
             </div>
-            <button type="button" class="btn-add" onclick="adicionarPreparo()">
-                <i class="fas fa-plus"></i> Adicionar Passo
-            </button>
-        </div>
 
-        <div class="form-group">
-            <label asp-for="DicaDoChef"><i class="fas fa-lightbulb"></i> Dica do Chef</label>
-            <textarea asp-for="DicaDoChef" class="form-control" rows="2"></textarea>
-        </div>
+            @section Scripts {
+                <script>
+                                        function adicionarIngrediente() {
+                                            const container = document.getElementById('ingredientes-container');
+                                            const novoItem = document.createElement('div');
+                                            novoItem.className = 'ingrediente-item';
+                                            novoItem.innerHTML = `
+                                                <input type="text" name="ingredientesNomes[]" placeholder="Nome do ingrediente" class="form-control">
+                                                <input type="text" name="quantidades[]" placeholder="Quantidade" class="form-control">
+                                                <button type="button" class="btn-remove" onclick="removerIngrediente(this)">✕</button>
+                                            `;
+                                            container.appendChild(novoItem);
+                                        }
 
-        <div style="display: flex; gap: 1rem;">
-            <button type="submit" class="btn-submit">
-                <i class="fas fa-save"></i> Salvar Alterações
-            </button>
-            <a asp-action="Receita" asp-route-id="@Model.Id" class="btn-cancelar">
-                Cancelar
-            </a>
-        </div>
-    </form>
-</div>
+                                        function removerIngrediente(botao) {
+                                            botao.parentElement.remove();
+                                        }
 
-@section Scripts {
-    <script>
-        function adicionarIngrediente() {
-            const container = document.getElementById('ingredientes-container');
-            const novoItem = document.createElement('div');
-            novoItem.className = 'ingrediente-item';
-            novoItem.innerHTML = `
-                <input type="text" name="ingredientesNomes[]" placeholder="Nome do ingrediente" class="form-control">
-                <input type="text" name="quantidades[]" placeholder="Quantidade" class="form-control">
-                <button type="button" class="btn-remove" onclick="removerIngrediente(this)">✕</button>
-            `;
-            container.appendChild(novoItem);
-        }
+                                        function adicionarPreparo() {
+                                            const container = document.getElementById('preparo-container');
+                                            const passoAtual = container.children.length + 1;
+                                            const novoItem = document.createElement('div');
+                                            novoItem.className = 'preparo-item';
+                                            novoItem.innerHTML = `
+                                                <input type="text" name="passos[]" placeholder="Passo ${passoAtual}: ..." class="form-control">
+                                                <button type="button" class="btn-remove" onclick="removerPreparo(this)">✕</button>
+                                            `;
+                                            container.appendChild(novoItem);
+                                        }
 
-        function removerIngrediente(botao) {
-            botao.parentElement.remove();
-        }
-
-        function adicionarPreparo() {
-            const container = document.getElementById('preparo-container');
-            const passoAtual = container.children.length + 1;
-            const novoItem = document.createElement('div');
-            novoItem.className = 'preparo-item';
-            novoItem.innerHTML = `
-                <input type="text" name="passos[]" placeholder="Passo ${passoAtual}: ..." class="form-control">
-                <button type="button" class="btn-remove" onclick="removerPreparo(this)">✕</button>
-            `;
-            container.appendChild(novoItem);
-        }
-
-        function removerPreparo(botao) {
-            botao.parentElement.remove();
-            const passos = document.querySelectorAll('#preparo-container .preparo-item input');
-            passos.forEach((passo, index) => {
-                passo.placeholder = `Passo ${index + 1}: ...`;
-            });
-        }
-    </script>
-}
+                                        function removerPreparo(botao) {
+                                            botao.parentElement.remove();
+                                            const passos = document.querySelectorAll('#preparo-container .preparo-item input');
+                                            passos.forEach((passo, index) => {
+                                                passo.placeholder = `Passo ${index + 1}: ...`;
+                                            });
+                                        }document.getElementById('fotoReceita')?.addEventListener('change', function (e) {
+                                        const preview = document.getElementById('previewImagem');
+                                        const container = document.getElementById('previewContainer');
+                                        const file = e.target.files[0];
+                                        if (file) {
+                                            const reader = new FileReader();
+                                            reader.onload = function (ev) {
+                                                preview.src = ev.target.result;
+                                                container.style.display = 'block';
+                                            }
+                                            reader.readAsDataURL(file);
+                                        } else {
+                                            container.style.display = 'none';
+                                        }
+                                    });
+                </script>
+            }

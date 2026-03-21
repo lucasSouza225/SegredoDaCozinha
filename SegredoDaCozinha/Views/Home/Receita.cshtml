@@ -21,12 +21,26 @@
 
 <!-- cabeçalho com foto e descrição -->
 <div class="recipe-header">
-    <div class="recipe-header-img" title="Foto: @Model.Nome" 
-    style="background-image: url('@Model.Foto');">
-    </div>
+    <div class="recipe-header-img">
+    @if (!string.IsNullOrEmpty(Model.Foto))
+    {
+        <img src="@Model.Foto" alt="@Model.Nome" 
+             style="width: 100%; height: 100%; object-fit: cover; border-radius: 32px;"
+             onerror="this.onerror=null; this.src='/img/receitas/default.jpg'; console.log('Erro ao carregar: @Model.Foto');">
+        <script>
+            console.log("Tentando carregar imagem: @Model.Foto");
+        </script>
+    }
+    else
+    {
+        <div style="width: 100%; height: 100%; background: var(--fogao-antigo); display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-utensils" style="font-size: 4rem; color: var(--marrom-claro);"></i>
+        </div>
+    }
+</div>
     <div class="recipe-header-info">
         <h1>@Model.Nome</h1>
-        
+
         @if (isDono)
         {
             <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
@@ -38,7 +52,7 @@
                 </button>
             </div>
         }
-        
+
         <div class="recipe-description">
             @Model.Descricao
         </div>
@@ -64,77 +78,118 @@
         </ul>
         <p style="margin-top: 1.5rem; color: #6b5b4b; font-size: 0.95rem;"><i class="fas fa-info-circle"></i>
             ingredientes selecionados da horta e despensa</p>
-    </aside>
+        </aside>
 
-    <section class="preparation-card">
-        <h2><i class="fas fa-list-ol"></i> Modo de preparo</h2>
-        <ul class="step-list">
-            @foreach (Preparo preparo in Model.Preparos)
+        <section class="preparation-card">
+            <h2><i class="fas fa-list-ol"></i> Modo de preparo</h2>
+            <ul class="step-list">
+                @foreach (Preparo preparo in Model.Preparos)
+                {
+                    <li>@preparo.Texto</li>
+                }
+            </ul>
+            @if (!string.IsNullOrEmpty(Model.DicaDoChef))
             {
-                <li>@preparo.Texto</li>
+                <div class="tip-box">
+                    <i class="fas fa-lightbulb"></i> <strong>Dica do chef:</strong> @Model.DicaDoChef
+                </div>
             }
-        </ul>
-        @if (!string.IsNullOrEmpty(Model.DicaDoChef)) {
-            <div class="tip-box">
-                <i class="fas fa-lightbulb"></i> <strong>Dica do chef:</strong> @Model.DicaDoChef
-            </div>
+        </section>
+    </div>
+
+    <div class="back-link">
+        <a asp-action="Index"><i class="fas fa-arrow-left"></i> Voltar para o Início</a>
+    </div>
+
+    <form id="formDeletar" asp-action="Deletar" method="post" style="display: none;">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" id="receitaIdParaDeletar" />
+    </form>
+
+    @section Scripts {
+        <script>
+                function confirmarDeletar(id) {
+                    if (confirm("Tem certeza que deseja deletar esta receita?\nEsta ação não pode ser desfeita!")) {
+                        document.getElementById('receitaIdParaDeletar').value = id;
+                        document.getElementById('formDeletar').submit();
+                    }
+                }
+        </script>
+    }
+
+    <style>
+        .btn-editar,
+        .btn-deletar {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
         }
-    </section>
-</div>
 
-<div class="back-link">
-    <a asp-action="Index"><i class="fas fa-arrow-left"></i> Voltar para o Início</a>
-</div>
-
-<form id="formDeletar" asp-action="Deletar" method="post" style="display: none;">
-    @Html.AntiForgeryToken()
-    <input type="hidden" name="id" id="receitaIdParaDeletar" />
-</form>
-
-@section Scripts {
-    <script>
-        function confirmarDeletar(id) {
-            if (confirm("Tem certeza que deseja deletar esta receita?\nEsta ação não pode ser desfeita!")) {
-                document.getElementById('receitaIdParaDeletar').value = id;
-                document.getElementById('formDeletar').submit();
-            }
+        .btn-editar {
+            background: var(--laranja-tempero);
+            color: #1e1b16;
         }
-    </script>
-}
 
-<style>
-    .btn-editar, .btn-deletar {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.6rem 1.2rem;
-        border-radius: 50px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        transition: all 0.3s;
-        cursor: pointer;
-        border: none;
-        text-decoration: none;
-    }
-    
-    .btn-editar {
-        background: var(--laranja-tempero);
-        color: #1e1b16;
-    }
-    
-    .btn-editar:hover {
-        background: var(--vermelho-segredo);
-        color: white;
-        transform: translateY(-2px);
-    }
-    
-    .btn-deletar {
-        background: #dc3545;
-        color: white;
-    }
-    
-    .btn-deletar:hover {
-        background: #c82333;
-        transform: translateY(-2px);
-    }
-</style>
+        .btn-editar:hover {
+            background: var(--vermelho-segredo);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-deletar {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-deletar:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        /* Estilos para a imagem */
+        .recipe-header-img {
+            flex: 1 1 380px;
+            min-height: 320px;
+            border-radius: 32px;
+            overflow: hidden;
+            background: var(--fogao-antigo);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .recipe-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 32px;
+        }
+
+        .recipe-img-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            color: var(--marrom-claro);
+            width: 100%;
+            height: 100%;
+            min-height: 320px;
+        }
+
+        .recipe-img-placeholder i {
+            font-size: 4rem;
+        }
+
+        .recipe-img-placeholder span {
+            font-size: 1rem;
+        }
+    </style>

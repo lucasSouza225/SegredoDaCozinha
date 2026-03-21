@@ -72,7 +72,7 @@ public class AppDbSeed
         builder.Entity<Usuario>().HasData(usuarios);
         #endregion
     
-        #region Popular Perfil Usuário - CORRIGIDO
+        #region Popular Perfil Usuário
         List<IdentityUserRole<string>> userRoles = new()
         {
             new() { UserId = usuarios[0].Id, RoleId = roles[0].Id },  // Administrador
@@ -135,7 +135,7 @@ public class AppDbSeed
         builder.Entity<Ingrediente>().HasData(ingredientes);
         #endregion
     
-        #region Popular Receitas
+        #region Popular Receitas (COM URLs DE IMAGENS ONLINE)
         List<Receita> receitas = new() 
         {
             new() 
@@ -147,7 +147,7 @@ public class AppDbSeed
                 Dificuldade = Dificuldade.Fácil,
                 Rendimento = 5,
                 TempoPreparo = "20 minutos",
-                Foto = "/img/receitas/1.jpg",
+                Foto = "https://images.unsplash.com/photo-1600891964092-4316c288032e?w=800&h=600&fit=crop",
                 UsuarioId = usuarios[0].Id,
                 Destaque = true,
                 DicaDoChef = "Você pode modificar a quantidade de temperos a gosto. Não esqueça de misturar bem os queijos."
@@ -161,7 +161,7 @@ public class AppDbSeed
                 Dificuldade = Dificuldade.Fácil,
                 Rendimento = 8,
                 TempoPreparo = "45 minutos",
-                Foto = "/img/receitas/bolo-cenoura.jpg",
+                Foto = "https://images.unsplash.com/photo-1578774296842-c45e472b5c2d?w=800&h=600&fit=crop",
                 UsuarioId = usuarios[0].Id,
                 Destaque = true,
                 DicaDoChef = "Use cenouras bem laranjas e bata bastante a massa para ficar bem fofinha."
@@ -175,7 +175,7 @@ public class AppDbSeed
                 Dificuldade = Dificuldade.Médio,
                 Rendimento = 4,
                 TempoPreparo = "35 minutos",
-                Foto = "/img/receitas/frango-curry.jpg",
+                Foto = "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=800&h=600&fit=crop",
                 UsuarioId = usuarios[1].Id,
                 Destaque = false,
                 DicaDoChef = "Deixe o frango marinar no curry por 30 minutos antes de cozinhar para intensificar o sabor."
@@ -189,7 +189,7 @@ public class AppDbSeed
                 Dificuldade = Dificuldade.Fácil,
                 Rendimento = 4,
                 TempoPreparo = "15 minutos",
-                Foto = "/img/receitas/salada-brocolis.jpg",
+                Foto = "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&h=600&fit=crop",
                 UsuarioId = usuarios[1].Id,
                 Destaque = false,
                 DicaDoChef = "Branqueie os brócolis por 2 minutos para ficarem mais crocantes e verdes."
@@ -203,7 +203,7 @@ public class AppDbSeed
                 Dificuldade = Dificuldade.Médio,
                 Rendimento = 6,
                 TempoPreparo = "1h 30min",
-                Foto = "/img/receitas/feijoada.jpg",
+                Foto = "https://images.unsplash.com/photo-1601493714580-2c3e5e3d3b5a?w=800&h=600&fit=crop",
                 UsuarioId = usuarios[0].Id,
                 Destaque = false,
                 DicaDoChef = "Deixe o feijão de molho de um dia para o outro para cozinhar mais rápido."
