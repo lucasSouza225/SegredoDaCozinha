@@ -1,7 +1,13 @@
-@model Receita
+@model SegredoDaCozinha.Models.Receita
 @{
     ViewData["Title"] = "Receita";
     ViewData["mainClass"] = "recipe-detail-container";
+}
+
+@inject Microsoft.AspNetCore.Identity.UserManager<SegredoDaCozinha.Models.Usuario> UserManager
+@{
+    var usuarioLogado = await UserManager.GetUserAsync(User);
+    var isDono = usuarioLogado != null && usuarioLogado.Id == Model.UsuarioId;
 }
 
 <!-- navegação interna -->
@@ -20,6 +26,19 @@
     </div>
     <div class="recipe-header-info">
         <h1>@Model.Nome</h1>
+        
+        @if (isDono)
+        {
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                <a asp-action="Editar" asp-route-id="@Model.Id" class="btn-editar">
+                    <i class="fas fa-edit"></i> Editar Receita
+                </a>
+                <button type="button" class="btn-deletar" onclick="confirmarDeletar(@Model.Id)">
+                    <i class="fas fa-trash-alt"></i> Deletar Receita
+                </button>
+            </div>
+        }
+        
         <div class="recipe-description">
             @Model.Descricao
         </div>
@@ -35,7 +54,6 @@
 
 <!-- duas colunas: ingredientes + modo de preparo -->
 <div class="recipe-two-columns">
-    <!-- ingredientes -->
     <aside class="ingredients-card">
         <h2><i class="fas fa-basket-shopping"></i> Ingredientes</h2>
         <ul class="ingredient-list">
@@ -48,14 +66,13 @@
             ingredientes selecionados da horta e despensa</p>
     </aside>
 
-    <!-- modo de preparo -->
     <section class="preparation-card">
         <h2><i class="fas fa-list-ol"></i> Modo de preparo</h2>
         <ul class="step-list">
             @foreach (Preparo preparo in Model.Preparos)
             {
                 <li>@preparo.Texto</li>
-                }
+            }
         </ul>
         @if (!string.IsNullOrEmpty(Model.DicaDoChef)) {
             <div class="tip-box">
@@ -65,7 +82,59 @@
     </section>
 </div>
 
-<!-- link de volta para a página inicial -->
 <div class="back-link">
-    <a asp-action="Index" asp-controller="Home"><i class="fas fa-arrow-left"></i> Voltar para o Início</a>
+    <a asp-action="Index"><i class="fas fa-arrow-left"></i> Voltar para o Início</a>
 </div>
+
+<form id="formDeletar" asp-action="Deletar" method="post" style="display: none;">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" id="receitaIdParaDeletar" />
+</form>
+
+@section Scripts {
+    <script>
+        function confirmarDeletar(id) {
+            if (confirm("Tem certeza que deseja deletar esta receita?\nEsta ação não pode ser desfeita!")) {
+                document.getElementById('receitaIdParaDeletar').value = id;
+                document.getElementById('formDeletar').submit();
+            }
+        }
+    </script>
+}
+
+<style>
+    .btn-editar, .btn-deletar {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s;
+        cursor: pointer;
+        border: none;
+        text-decoration: none;
+    }
+    
+    .btn-editar {
+        background: var(--laranja-tempero);
+        color: #1e1b16;
+    }
+    
+    .btn-editar:hover {
+        background: var(--vermelho-segredo);
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .btn-deletar {
+        background: #dc3545;
+        color: white;
+    }
+    
+    .btn-deletar:hover {
+        background: #c82333;
+        transform: translateY(-2px);
+    }
+</style>

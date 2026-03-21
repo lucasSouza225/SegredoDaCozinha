@@ -3,6 +3,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+    text-decoration: none;
 }
 
 body {
@@ -11,7 +12,6 @@ body {
     line-height: 1.5;
 }
 
-/* ===== PALETA PRINCIPAL - SEGREDO DA COZINHA ===== */
 :root {
     --vermelho-segredo: #D62828;
     --laranja-tempero: #F77F00;
