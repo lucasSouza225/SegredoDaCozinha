@@ -6,6 +6,23 @@
 <!-- Categorias de receitas -->
 <div class="page-header">
     <h1><strong>Descubra os segredos</strong> da culinária caseira</h1>
+    
+    <!-- BARRA DE PESQUISA -->
+    <div class="search-bar-container" style="margin: 2rem auto; max-width: 500px;">
+        <div class="search-wrapper" style="display: flex; gap: 0.5rem; background: var(--cozinha-branca); border-radius: 60px; padding: 0.3rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            <input type="text" id="searchInput" placeholder="Buscar receitas..." 
+                   style="flex: 1; padding: 0.8rem 1.5rem; border: none; border-radius: 60px; font-size: 1rem; background: transparent; outline: none;">
+            <button id="searchBtn" class="btn-busca" 
+                    style="background: var(--laranja-tempero); border: none; padding: 0.8rem 1.5rem; border-radius: 60px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+            <button id="clearSearchBtn" class="btn-limpar" 
+                    style="background: var(--fogao-antigo); border: none; padding: 0.8rem 1.5rem; border-radius: 60px; cursor: pointer; font-weight: 600; display: none;">
+                <i class="fas fa-times"></i> Limpar
+            </button>
+        </div>
+    </div>
+    
     <div class="category-tags">
         @foreach (Categoria categoria in ViewBag.Categorias)
         {
@@ -32,6 +49,9 @@
 <div class="section-title">
     <i class="fas fa-utensils"></i>
     <span>Receitas populares</span>
+    <span id="contadorReceitas" style="margin-left: auto; font-size: 0.9rem; background: var(--fogao-antigo); padding: 0.2rem 0.8rem; border-radius: 20px;">
+        @Model.Count receitas
+    </span>
 </div>
 
 <!-- Grade de receitas -->
@@ -39,7 +59,7 @@
     @foreach (Receita receita in Model)
     {
         <a asp-action="Receita" asp-route-id="@receita.Id" style="text-decoration: none;" 
-           class="recipe-card-link" data-categoria="@receita.CategoriaId">
+           class="recipe-card-link" data-categoria="@receita.CategoriaId" data-nome="@receita.Nome.ToLower()">
             <div class="recipe-card">
                 <div class="card-img" style="background-image: url('@receita.Foto');">
                     <span class="difficulty-badge">
@@ -77,9 +97,70 @@
 
 @section Scripts {
     <script>
-        function filtrarPorCategoria(categoriaId, categoriaNome) {
-            const cards = document.querySelectorAll('.recipe-card-link');
+        // Variáveis
+        let categoriaAtual = null;
+        let termoBusca = '';
+
+        // Elementos
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const clearSearchBtn = document.getElementById('clearSearchBtn');
+        const contadorElement = document.getElementById('contadorReceitas');
+        const recipeCards = document.querySelectorAll('.recipe-card-link');
+
+        // Função para filtrar receitas
+        function filtrarReceitas() {
             let contador = 0;
+            const termo = termoBusca.toLowerCase();
+            
+            recipeCards.forEach(card => {
+                const nome = card.getAttribute('data-nome') || card.querySelector('.recipe-name').innerText.toLowerCase();
+                const categoria = parseInt(card.getAttribute('data-categoria'));
+                
+                const matchBusca = termo === '' || nome.includes(termo);
+                const matchCategoria = categoriaAtual === null || categoria === categoriaAtual;
+                
+                if (matchBusca && matchCategoria) {
+                    card.style.display = 'block';
+                    contador++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Atualiza contador
+            contadorElement.innerHTML = `${contador} receita${contador !== 1 ? 's' : ''}`;
+            
+            // Mostra mensagem se não houver resultados
+            mostrarMensagemSeVazio(contador);
+        }
+
+        // Função para buscar
+        function buscarReceitas() {
+            termoBusca = searchInput.value;
+            filtrarReceitas();
+            
+            // Mostra/esconde botão limpar
+            if (termoBusca !== '') {
+                clearSearchBtn.style.display = 'block';
+                searchBtn.innerHTML = '<i class="fas fa-search"></i> Buscar';
+            } else {
+                clearSearchBtn.style.display = 'none';
+            }
+        }
+
+        // Função para limpar busca
+        function limparBusca() {
+            searchInput.value = '';
+            termoBusca = '';
+            filtrarReceitas();
+            clearSearchBtn.style.display = 'none';
+            searchInput.focus();
+        }
+
+        // Função para filtrar por categoria
+        function filtrarPorCategoria(categoriaId, categoriaNome) {
+            categoriaAtual = categoriaId;
             
             // Remove classe active de todos os botões
             document.querySelectorAll('.category-tag').forEach(tag => {
@@ -92,28 +173,12 @@
                 botaoClicado.classList.add('active');
             }
             
-            cards.forEach(card => {
-                const categoriaCard = card.getAttribute('data-categoria');
-                if (categoriaCard == categoriaId) {
-                    card.style.display = 'block';
-                    contador++;
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-            
-            // Atualiza o contador
-            const contadorElement = document.getElementById('contadorReceitas');
-            if (contadorElement) {
-                contadorElement.innerHTML = `${contador} receita${contador !== 1 ? 's' : ''}`;
-            }
-            
-            mostrarMensagemSeVazio(contador, categoriaNome);
+            filtrarReceitas();
         }
-        
+
+        // Função para mostrar todas as receitas
         function mostrarTodasReceitas() {
-            const cards = document.querySelectorAll('.recipe-card-link');
-            let contador = 0;
+            categoriaAtual = null;
             
             // Remove classe active de todos os botões
             document.querySelectorAll('.category-tag').forEach(tag => {
@@ -126,23 +191,11 @@
                 botaoTodas.classList.add('active');
             }
             
-            cards.forEach(card => {
-                card.style.display = 'block';
-                contador++;
-            });
-            
-            const contadorElement = document.getElementById('contadorReceitas');
-            if (contadorElement) {
-                contadorElement.innerHTML = `${contador} receita${contador !== 1 ? 's' : ''}`;
-            }
-            
-            const noResults = document.querySelector('.no-results-message');
-            if (noResults) {
-                noResults.remove();
-            }
+            filtrarReceitas();
         }
-        
-        function mostrarMensagemSeVazio(contador, categoriaNome) {
+
+        // Função para mostrar mensagem quando não há resultados
+        function mostrarMensagemSeVazio(contador) {
             const recipeGrid = document.getElementById('recipeGrid');
             const existingMessage = document.querySelector('.no-results-message');
             
@@ -154,16 +207,46 @@
                 const mensagemDiv = document.createElement('div');
                 mensagemDiv.className = 'no-results-message';
                 mensagemDiv.style.cssText = 'text-align: center; padding: 4rem; background: var(--cozinha-branca); border-radius: 28px; margin-top: 2rem;';
+                
+                let mensagem = '';
+                if (termoBusca !== '' && categoriaAtual !== null) {
+                    mensagem = `Nenhuma receita encontrada para "${termoBusca}" nesta categoria.`;
+                } else if (termoBusca !== '') {
+                    mensagem = `Nenhuma receita encontrada para "${termoBusca}".`;
+                } else if (categoriaAtual !== null) {
+                    mensagem = `Nenhuma receita encontrada nesta categoria.`;
+                } else {
+                    mensagem = `Nenhuma receita encontrada.`;
+                }
+                
                 mensagemDiv.innerHTML = `
                     <i class="fas fa-search" style="font-size: 3rem; color: var(--laranja-tempero); margin-bottom: 1rem; display: block;"></i>
-                    <h3 style="color: var(--marco-zero);">Nenhuma receita encontrada</h3>
-                    <p style="color: var(--cinza-texto);">Ainda não temos receitas na categoria "${categoriaNome}".</p>
-                    <p style="color: var(--cinza-texto);">Que tal <a href="/Receita/Criar" style="color: var(--laranja-tempero);">compartilhar uma</a>?</p>
+                    <h3 style="color: var(--marco-zero);">Nenhum resultado encontrado</h3>
+                    <p style="color: var(--cinza-texto);">${mensagem}</p>
+                    <p style="color: var(--cinza-texto); margin-top: 1rem;">Que tal <a href="/Receita/Criar" style="color: var(--laranja-tempero);">compartilhar uma receita</a>?</p>
                 `;
                 recipeGrid.parentNode.insertBefore(mensagemDiv, recipeGrid.nextSibling);
             }
         }
+
+        // Event Listeners
+        if (searchBtn) {
+            searchBtn.addEventListener('click', buscarReceitas);
+        }
         
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    buscarReceitas();
+                }
+            });
+        }
+        
+        if (clearSearchBtn) {
+            clearSearchBtn.addEventListener('click', limparBusca);
+        }
+        
+        // Inicializa com todas as receitas
         document.addEventListener('DOMContentLoaded', function() {
             mostrarTodasReceitas();
         });
